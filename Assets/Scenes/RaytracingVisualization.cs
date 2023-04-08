@@ -5,27 +5,25 @@ using UnityEngine;
 public class RaytracingVisualization : MonoBehaviour
 {
     [Header("Main Options")]
-    [SerializeField] int width = 50;
-    [SerializeField] int height = 50;
-    [SerializeField] float resizingOffset = 50;
-    [SerializeField] Transform[] corners = new Transform[4];
+    [SerializeField] int width = 100;
+    [SerializeField] int height = 100;
+    [SerializeField] float length = 2;
     [SerializeField] float radius = 0.25f;
-
+    [SerializeField] float forwardOffset = 2;
 
     [Header("Other Options")]
-    [SerializeField] float forwardOffset = 0;
-    [SerializeField] bool showCorners = true;
+    [SerializeField] bool showCorners = false;
+    [SerializeField] Transform[] corners = new Transform[4];
 
     // Start is called before the first frame update
     void Start()
     {
-        if(forwardOffset >= 5f)
+        if (showCorners)
         {
-            //forwardOffset = -50;
-        }
-        for (int i = 0; i < corners.Length; i++)
-        {
-            corners[i].transform.gameObject.SetActive(false);
+            for (int i = 0; i < corners.Length; i++)
+            {
+                corners[i].transform.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -38,15 +36,15 @@ public class RaytracingVisualization : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 Vector2 coord = new Vector2((float)x / (float)width, (float)y / (float)height);
-                coord.x = (coord.x * 2f - 1f) * resizingOffset;
-                coord.y = (coord.y * 2f - 1f) * resizingOffset;
-                Vector3 rayOrigin = new Vector3(0, 0, Mathf.Abs(forwardOffset));
-                Vector3 rayDir = new Vector3(coord.x * resizingOffset, coord.y * resizingOffset, -1.0f);
+                coord.x = (coord.x * 2f - 1f);
+                coord.y = (coord.y * 2f - 1f);
+                Vector3 rayOrigin = new Vector3(0, 0, (forwardOffset)); //Mathf.Abs(forwardOffset));
+                Vector3 rayDir = new Vector3(coord.x, coord.y, -1.0f);
                 //Vector3 RayDir = new Vector3(coord.x * (width / 2), coord.y * (height / 2), 0);
                 //Color colorsUV = new Color(coord.x * 0.5f + 0.5f, coord.y * 0.5f + 0.5f, 0);
-                //Debug.DrawLine(rayOrigin, rayDir, colorsUV);
+                //Debug.DrawLine(rayOrigin, rayOrigin + rayDir * length, colorsUV);
 
-                
+
                 //solve for t : t is the magnitude of the ray (quadratic formula below)
                 //  BELOW IS a			BELOW IS b			BELOW IS C
                 // (bx^2 + by^2)t^2 + (2(axbx + ayby))t + (ax^2 + ay^2 - r^2) = 0
@@ -64,34 +62,54 @@ public class RaytracingVisualization : MonoBehaviour
 
 	            if (discriminant >= 0.0f)
 	            {
-                    //return 0xffff00ff;
+                    //return 0xff00ffff; abgr rgba
                     mainCol = new Color(1,1,1,1);
+                }
+                else
+                {
+                    //return 0xff000000;
+                    mainCol = new Color(0,0,0,0.1f);
                 }
 
                 //return 0xff000000;
-                //Color colorsUV = new Color(coord.x * 0.5f + 0.5f, coord.y * 0.5f + 0.5f, 0);
-                Debug.DrawLine(rayOrigin, rayDir, mainCol);
+                Debug.DrawLine(rayOrigin, rayOrigin + rayDir * length, mainCol);
                 
             }
         }
+        //POST FOR LOOP
 
+        CornerHandler();
+    }
+
+    void CornerHandler()
+    {
         /*
         corners[0].transform.position = new Vector3(width/2, height/2, 0);
         corners[1].transform.position = new Vector3(width/2, -height/2, 0);
         corners[2].transform.position = new Vector3(-width/2, height/2, 0);
         corners[3].transform.position = new Vector3(-width/2, -height/2, 0);
         */
-
         if (showCorners)
         {
             for (int i = 0; i < corners.Length; i++)
             {
                 //float xx = width / 2, yy = height / 2;
-                float xx = resizingOffset, yy = resizingOffset;
+                float xx = 1, yy = 1;
                 if (i >= 2) { xx = -xx; }
                 if (i % 2 == 1) { yy = -yy; }
                 corners[i].transform.position = new Vector3(xx, yy, 0);
             }
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.black;
+        Gizmos.DrawSphere(Vector3.forward * forwardOffset, radius);
+        Gizmos.DrawWireSphere(Vector3.forward * forwardOffset, radius);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawSphere(Vector3.zero,radius);
+        Gizmos.DrawWireSphere(Vector3.zero, radius);
     }
 }
