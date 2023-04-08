@@ -735,8 +735,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 50
   height: 50
+  resizingOffset: 1
   corners:
   - {fileID: 677236261}
   - {fileID: 1968315931}
   - {fileID: 1290415271}
   - {fileID: 1756890707}
+  radius: 0.25
+  forwardOffset: 2
+  showCorners: 0
