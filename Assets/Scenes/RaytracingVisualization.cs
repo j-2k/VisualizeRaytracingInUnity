@@ -12,6 +12,7 @@ public class RaytracingVisualization : MonoBehaviour
     [SerializeField] float forwardOffset = 2;
 
     [Header("Other Options")]
+    [SerializeField] [Range(0, 1)] float root0Alpha = 0.5f;
     [SerializeField] bool showCorners = false;
     [SerializeField] Transform[] corners = new Transform[4];
 
@@ -68,7 +69,7 @@ public class RaytracingVisualization : MonoBehaviour
                 else
                 {
                     //return 0xff000000;
-                    mainCol = new Color(0,0,0,0.1f);
+                    mainCol = new Color(0,0,0, root0Alpha);
                 }
 
                 //return 0xff000000;
@@ -104,8 +105,9 @@ public class RaytracingVisualization : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.black;
+        Gizmos.color = Color.cyan;
         Gizmos.DrawSphere(Vector3.forward * forwardOffset, radius);
+        Gizmos.color = Color.black;
         Gizmos.DrawWireSphere(Vector3.forward * forwardOffset, radius);
 
         Gizmos.color = Color.white;
