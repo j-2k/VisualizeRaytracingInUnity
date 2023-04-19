@@ -39,6 +39,8 @@ public class RaytracingVisualization : MonoBehaviour
                 Vector2 coord = new Vector2((float)x / (float)width, (float)y / (float)height);
                 coord.x = (coord.x * 2f - 1f);
                 coord.y = (coord.y * 2f - 1f);
+                float aspectRatio = (float)width / (float)height;
+                coord.x *= aspectRatio;
                 Vector3 rayOrigin = new Vector3(0, 0, (forwardOffset)); //Mathf.Abs(forwardOffset));
                 Vector3 rayDir = new Vector3(coord.x, coord.y, -1.0f);
                 //Vector3 RayDir = new Vector3(coord.x * (width / 2), coord.y * (height / 2), 0);
