@@ -16,6 +16,9 @@ public class RaytracingVisualization : MonoBehaviour
     [SerializeField] bool showCorners = false;
     [SerializeField] Transform[] corners = new Transform[4];
 
+    [Header("Other Private")]
+    [SerializeField] List<Vector3> hitPositionsListT0;
+    [SerializeField] List<Vector3> hitPositionsListT1;
     // Start is called before the first frame update
     void Start()
     {
@@ -66,6 +69,18 @@ public class RaytracingVisualization : MonoBehaviour
 	            if (discriminant >= 0.0f)
 	            {
                     //return 0xff00ffff; abgr rgba
+                    
+                    float t0 = (-b + Mathf.Sqrt(discriminant)) / (2.0f * a);
+                    float t1 = (-b - Mathf.Sqrt(discriminant)) / (2.0f * a);
+                    
+                    {
+                        Vector3 hitPos = rayOrigin + rayDir * t0;
+                        hitPositionsListT0.Add(hitPos);
+                    }
+                    {
+                        Vector3 hitPos = rayOrigin + rayDir * t1;
+                        hitPositionsListT1.Add(hitPos);
+                    }
                     mainCol = new Color(1,1,1,1);
                 }
                 else
@@ -115,5 +130,10 @@ public class RaytracingVisualization : MonoBehaviour
         Gizmos.color = Color.white;
         Gizmos.DrawSphere(Vector3.zero,radius);
         Gizmos.DrawWireSphere(Vector3.zero, radius);
+
+        for (int i = 0; i < hitPositionsListT0.Count; i++)
+        {
+            Gizmos.DrawCube(hitPositionsListT0[i], Vector3.one * 0.1f);
+        }
     }
 }
