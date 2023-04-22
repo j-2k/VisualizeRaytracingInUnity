@@ -6,6 +6,8 @@ using UnityEngine.Experimental.GlobalIllumination;
 
 public class RaytracingVisualization : MonoBehaviour
 {
+    [Header("PRESS SPACE TO LOAD HIT GIZMOS (OR THE KEYCODE SET BELOW)")]
+
     [Header("Main Options")]
     [SerializeField] int width = 100;
     [SerializeField] int height = 100;
