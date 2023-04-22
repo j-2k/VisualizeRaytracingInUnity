@@ -1,6 +1,8 @@
 # Visualizing my raytracer from scratch in unity
 The sole purpose of this project is to visualize my first raytracer from scratch in a better prespective using a engine.
 
+This was made in Unity > BIRP > Version 2021.3.16f1
+
 Click [here](https://github.com/j-2k/Raytracing) to access my raytracing from scratch project!
 A gif & some images below enjoy.
 <p align="center">
