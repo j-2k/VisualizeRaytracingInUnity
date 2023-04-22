@@ -774,27 +774,9 @@ MonoBehaviour:
   radius: 0.25
   forwardOffset: 2
   root0Alpha: 0.5
-  showCorners: 0
-  corners:
-  - {fileID: 677236261}
-  - {fileID: 1968315931}
-  - {fileID: 1290415271}
-  - {fileID: 1756890707}
+  isDebuggingRays: 1
   isShowingHitGizmos: 0
+  isShowingSphereGizmo: 0
+  gizmoSize: 0.005
   hitPositionsListT0: []
   hitPositionsListT1: []
-  RestartGizmos:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2068852474}
-        m_TargetAssemblyTypeName: RaytracingVisualization, Assembly-CSharp
-        m_MethodName: ClearGizmosList
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2

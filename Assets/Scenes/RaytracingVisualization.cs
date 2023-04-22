@@ -14,30 +14,25 @@ public class RaytracingVisualization : MonoBehaviour
 
     [Header("Other Options")]
     [SerializeField][Range(0, 1)] float root0Alpha = 0.5f;
-    [SerializeField] bool isShowingRays = true;
-    [SerializeField] bool showCorners = false;
-    [SerializeField] Transform[] corners = new Transform[4];
 
-    [Header("Other Gizmo Stuff")]
+    [Header("Showing Gizmos & Debugs")]
+    [SerializeField] bool isDebuggingRays = true;
     [SerializeField] bool isShowingHitGizmos = false;
-    [SerializeField] bool isShowingSphereGizmo = false;
+    [SerializeField] bool isShowingSphereGizmo = true;
+    [SerializeField] KeyCode reloadGizmosKey;
+    bool reloadHitGizmos = false;
 
-    [SerializeField][Range(0, 1)] float gizmoSize = 0.1f;
+    [SerializeField][Range(0, 1)] float gizmoSize = 0.005f;
     [SerializeField] List<Vector3> hitPositionsListT0;
     [SerializeField] List<Vector3> hitPositionsListT1;
 
-    [SerializeField] UnityEvent RestartGizmos;
     // Start is called before the first frame update
     void Start()
     {
-        if (showCorners)
+        if(reloadGizmosKey == KeyCode.None)
         {
-            for (int i = 0; i < corners.Length; i++)
-            {
-                corners[i].transform.gameObject.SetActive(true);
-            }
+            reloadGizmosKey = KeyCode.Space;
         }
-        isShowingHitGizmos = false;
     }
 
     // Update is called once per frame
@@ -83,17 +78,22 @@ public class RaytracingVisualization : MonoBehaviour
                     float t0 = (-b + Mathf.Sqrt(discriminant)) / (2.0f * a);
                     float t1 = (-b - Mathf.Sqrt(discriminant)) / (2.0f * a);
 
-                    if (!isShowingHitGizmos)
+
                     {
+                        Vector3 hitPos = rayOrigin + rayDir * t0;
+                        if(!reloadHitGizmos)
                         {
-                            Vector3 hitPos = rayOrigin + rayDir * t0;
                             hitPositionsListT0.Add(hitPos);
                         }
+                    }
+                    {
+                        Vector3 hitPos = rayOrigin + rayDir * t1;
+                        if (!reloadHitGizmos)
                         {
-                            Vector3 hitPos = rayOrigin + rayDir * t1;
                             hitPositionsListT1.Add(hitPos);
                         }
                     }
+
 
                     mainCol = new Color(1, 1, 1, 1);
                 }
@@ -103,7 +103,7 @@ public class RaytracingVisualization : MonoBehaviour
                     mainCol = new Color(0, 0, 0, root0Alpha);
                 }
 
-                if (isShowingRays)
+                if (isDebuggingRays)
                 {
                     //return 0xff000000;
                     Debug.DrawLine(rayOrigin, rayOrigin + rayDir * length, mainCol);
@@ -113,41 +113,21 @@ public class RaytracingVisualization : MonoBehaviour
         }
 
         //POST FOR LOOP
-        GizmoHandler();
-        CornerHandler();
+        ReloadGizmosManager();
     }
 
-    void GizmoHandler()
+    void ReloadGizmosManager()
     {
-        if (!isShowingHitGizmos)
+        if (!reloadHitGizmos)
         {
-            isShowingHitGizmos = true;
+            reloadHitGizmos = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(reloadGizmosKey))
         {
-            RestartGizmos.Invoke();
-        }
-    }
-
-    void CornerHandler()
-    {
-        /*
-        corners[0].transform.position = new Vector3(width/2, height/2, 0);
-        corners[1].transform.position = new Vector3(width/2, -height/2, 0);
-        corners[2].transform.position = new Vector3(-width/2, height/2, 0);
-        corners[3].transform.position = new Vector3(-width/2, -height/2, 0);
-        */
-        if (showCorners)
-        {
-            for (int i = 0; i < corners.Length; i++)
-            {
-                //float xx = width / 2, yy = height / 2;
-                float xx = 1, yy = 1;
-                if (i >= 2) { xx = -xx; }
-                if (i % 2 == 1) { yy = -yy; }
-                corners[i].transform.position = new Vector3(xx, yy, 0);
-            }
+            hitPositionsListT0.Clear();
+            hitPositionsListT1.Clear();
+            reloadHitGizmos = false;
         }
     }
 
@@ -156,31 +136,30 @@ public class RaytracingVisualization : MonoBehaviour
         if (isShowingSphereGizmo)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawSphere(Vector3.forward * forwardOffset, radius);
+            Gizmos.DrawSphere(Vector3.forward * forwardOffset, 0.25f);
             Gizmos.color = Color.black;
-            Gizmos.DrawWireSphere(Vector3.forward * forwardOffset, radius);
+            Gizmos.DrawWireSphere(Vector3.forward * forwardOffset, 0.25f);
 
             Gizmos.color = Color.white;
             Gizmos.DrawSphere(Vector3.zero, radius);
             Gizmos.DrawWireSphere(Vector3.zero, radius);
         }
 
-        for (int i = 0; i < hitPositionsListT0.Count; i++)
+        if (isShowingHitGizmos)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawCube(hitPositionsListT0[i], Vector3.one * gizmoSize);
-        }
-        for (int i = 0; i < hitPositionsListT1.Count; i++)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawCube(hitPositionsListT1[i], Vector3.one * gizmoSize);
+            for (int i = 0; i < hitPositionsListT0.Count; i++)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawSphere(hitPositionsListT0[i], gizmoSize);
+            }
+            for (int i = 0; i < hitPositionsListT1.Count; i++)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawSphere(hitPositionsListT1[i], gizmoSize);
+            }
         }
     }
 
-    public void ClearGizmosList()
-    {
-        hitPositionsListT0.Clear();
-        hitPositionsListT1.Clear();
-        isShowingHitGizmos = false;
-    }
+
+
 }
