@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RaytracingVisualization : MonoBehaviour
 {
@@ -12,13 +13,20 @@ public class RaytracingVisualization : MonoBehaviour
     [SerializeField] float forwardOffset = 2;
 
     [Header("Other Options")]
-    [SerializeField] [Range(0, 1)] float root0Alpha = 0.5f;
+    [SerializeField][Range(0, 1)] float root0Alpha = 0.5f;
+    [SerializeField] bool isShowingRays = true;
     [SerializeField] bool showCorners = false;
     [SerializeField] Transform[] corners = new Transform[4];
 
-    [Header("Other Private")]
+    [Header("Other Gizmo Stuff")]
+    [SerializeField] bool isShowingHitGizmos = false;
+    [SerializeField] bool isShowingSphereGizmo = false;
+
+    [SerializeField][Range(0, 1)] float gizmoSize = 0.1f;
     [SerializeField] List<Vector3> hitPositionsListT0;
     [SerializeField] List<Vector3> hitPositionsListT1;
+
+    [SerializeField] UnityEvent RestartGizmos;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,12 +37,14 @@ public class RaytracingVisualization : MonoBehaviour
                 corners[i].transform.gameObject.SetActive(true);
             }
         }
+        isShowingHitGizmos = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Color mainCol = new Color(0,0,0,0.5f);
+
+        Color mainCol = new Color(0, 0, 0, 0.5f);
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -58,45 +68,66 @@ public class RaytracingVisualization : MonoBehaviour
 
 
                 //final quadratic equation implemented
-                float a = Vector3.Dot(rayDir, rayDir);	//equivalent to float a =	rayDir.x * rayDir.x + rayDir.y * rayDir.y + rayDir.z * rayDir.z;
-	            float b = 2.0f * Vector3.Dot(rayDir, rayOrigin);
-	            float c = Vector3.Dot(rayOrigin, rayOrigin) - (radius * radius);
+                float a = Vector3.Dot(rayDir, rayDir);  //equivalent to float a =	rayDir.x * rayDir.x + rayDir.y * rayDir.y + rayDir.z * rayDir.z;
+                float b = 2.0f * Vector3.Dot(rayDir, rayOrigin);
+                float c = Vector3.Dot(rayOrigin, rayOrigin) - (radius * radius);
 
-	            //finding out the # of solutions from the quadratic equation
-	            //quad formula discriminant = b^2 - 4ac
-	            float discriminant = (b * b) - (4f * a * c);
+                //finding out the # of solutions from the quadratic equation
+                //quad formula discriminant = b^2 - 4ac
+                float discriminant = (b * b) - (4f * a * c);
 
-	            if (discriminant >= 0.0f)
-	            {
+                if (discriminant >= 0.0f)
+                {
                     //return 0xff00ffff; abgr rgba
-                    
+
                     float t0 = (-b + Mathf.Sqrt(discriminant)) / (2.0f * a);
                     float t1 = (-b - Mathf.Sqrt(discriminant)) / (2.0f * a);
-                    
+
+                    if (!isShowingHitGizmos)
                     {
-                        Vector3 hitPos = rayOrigin + rayDir * t0;
-                        hitPositionsListT0.Add(hitPos);
+                        {
+                            Vector3 hitPos = rayOrigin + rayDir * t0;
+                            hitPositionsListT0.Add(hitPos);
+                        }
+                        {
+                            Vector3 hitPos = rayOrigin + rayDir * t1;
+                            hitPositionsListT1.Add(hitPos);
+                        }
                     }
-                    {
-                        Vector3 hitPos = rayOrigin + rayDir * t1;
-                        hitPositionsListT1.Add(hitPos);
-                    }
-                    mainCol = new Color(1,1,1,1);
+
+                    mainCol = new Color(1, 1, 1, 1);
                 }
                 else
                 {
                     //return 0xff000000;
-                    mainCol = new Color(0,0,0, root0Alpha);
+                    mainCol = new Color(0, 0, 0, root0Alpha);
                 }
 
-                //return 0xff000000;
-                Debug.DrawLine(rayOrigin, rayOrigin + rayDir * length, mainCol);
-                
+                if (isShowingRays)
+                {
+                    //return 0xff000000;
+                    Debug.DrawLine(rayOrigin, rayOrigin + rayDir * length, mainCol);
+                }
+
             }
         }
-        //POST FOR LOOP
 
+        //POST FOR LOOP
+        GizmoHandler();
         CornerHandler();
+    }
+
+    void GizmoHandler()
+    {
+        if (!isShowingHitGizmos)
+        {
+            isShowingHitGizmos = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            RestartGizmos.Invoke();
+        }
     }
 
     void CornerHandler()
@@ -122,18 +153,34 @@ public class RaytracingVisualization : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(Vector3.forward * forwardOffset, radius);
-        Gizmos.color = Color.black;
-        Gizmos.DrawWireSphere(Vector3.forward * forwardOffset, radius);
+        if (isShowingSphereGizmo)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(Vector3.forward * forwardOffset, radius);
+            Gizmos.color = Color.black;
+            Gizmos.DrawWireSphere(Vector3.forward * forwardOffset, radius);
 
-        Gizmos.color = Color.white;
-        Gizmos.DrawSphere(Vector3.zero,radius);
-        Gizmos.DrawWireSphere(Vector3.zero, radius);
+            Gizmos.color = Color.white;
+            Gizmos.DrawSphere(Vector3.zero, radius);
+            Gizmos.DrawWireSphere(Vector3.zero, radius);
+        }
 
         for (int i = 0; i < hitPositionsListT0.Count; i++)
         {
-            Gizmos.DrawCube(hitPositionsListT0[i], Vector3.one * 0.1f);
+            Gizmos.color = Color.green;
+            Gizmos.DrawCube(hitPositionsListT0[i], Vector3.one * gizmoSize);
         }
+        for (int i = 0; i < hitPositionsListT1.Count; i++)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawCube(hitPositionsListT1[i], Vector3.one * gizmoSize);
+        }
+    }
+
+    public void ClearGizmosList()
+    {
+        hitPositionsListT0.Clear();
+        hitPositionsListT1.Clear();
+        isShowingHitGizmos = false;
     }
 }
