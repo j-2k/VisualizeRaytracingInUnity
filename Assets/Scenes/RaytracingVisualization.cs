@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class RaytracingVisualization : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class RaytracingVisualization : MonoBehaviour
     [SerializeField] float length = 2;
     [SerializeField] float radius = 0.25f;
     [SerializeField] float forwardOffset = 2;
+    [SerializeField] Light mainLight;
 
     [Header("Other Options")]
     [SerializeField][Range(0, 1)] float root0Alpha = 0.5f;
@@ -25,6 +27,9 @@ public class RaytracingVisualization : MonoBehaviour
     [SerializeField][Range(0, 1)] float gizmoSize = 0.005f;
     [SerializeField] List<Vector3> hitPositionsListT0;
     [SerializeField] List<Vector3> hitPositionsListT1;
+    [SerializeField] List<Vector3> normalsListT0;
+    [SerializeField] List<Vector3> normalsListT1;
+    Vector3 sphereOrigin = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +38,7 @@ public class RaytracingVisualization : MonoBehaviour
         {
             reloadGizmosKey = KeyCode.Space;
         }
+        sphereOrigin = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -81,16 +87,22 @@ public class RaytracingVisualization : MonoBehaviour
 
                     {
                         Vector3 hitPos = rayOrigin + rayDir * t0;
-                        if(!reloadHitGizmos)
+                        Vector3 normal = hitPos - sphereOrigin;
+                        normal.Normalize();
+                        if (!reloadHitGizmos)
                         {
                             hitPositionsListT0.Add(hitPos);
+                            normalsListT0.Add(normal);
                         }
                     }
                     {
                         Vector3 hitPos = rayOrigin + rayDir * t1;
+                        Vector3 normal = hitPos - sphereOrigin;
+                        normal.Normalize();
                         if (!reloadHitGizmos)
                         {
                             hitPositionsListT1.Add(hitPos);
+                            normalsListT1.Add(normal);
                         }
                     }
 
@@ -127,6 +139,8 @@ public class RaytracingVisualization : MonoBehaviour
         {
             hitPositionsListT0.Clear();
             hitPositionsListT1.Clear();
+            normalsListT0.Clear();
+            normalsListT1.Clear();
             reloadHitGizmos = false;
         }
     }
@@ -144,18 +158,38 @@ public class RaytracingVisualization : MonoBehaviour
             Gizmos.DrawSphere(Vector3.zero, radius);
             Gizmos.DrawWireSphere(Vector3.zero, radius);
         }
-
+        
         if (isShowingHitGizmos)
         {
             for (int i = 0; i < hitPositionsListT0.Count; i++)
             {
-                Gizmos.color = Color.green;
-                Gizmos.DrawSphere(hitPositionsListT0[i], gizmoSize);
+                float lightIntensity = Mathf.Max(Vector3.Dot(normalsListT0[i], -mainLight.transform.forward),0);
+                //float lightIntensity = 1;
+
+                Color currentColor = new Color(
+                    (normalsListT0[i].x * 0.5f + 0.5f) * lightIntensity,
+                    (normalsListT0[i].y * 0.5f + 0.5f) * lightIntensity,
+                    (normalsListT0[i].z * 0.5f + 0.5f) * lightIntensity,
+                    1);
+
+                Gizmos.color = currentColor;
+                //Gizmos.color = new Color(1 * lightIntensity, 1 * lightIntensity, 1 * lightIntensity, 1);
+                Gizmos.DrawCube(hitPositionsListT0[i], Vector3.one * gizmoSize);
             }
             for (int i = 0; i < hitPositionsListT1.Count; i++)
             {
-                Gizmos.color = Color.green;
-                Gizmos.DrawSphere(hitPositionsListT1[i], gizmoSize);
+                float lightIntensity = Mathf.Max(Vector3.Dot(normalsListT1[i], -mainLight.transform.forward), 0);
+                //float lightIntensity = 1;
+
+                Color currentColor = new Color(
+                    (normalsListT1[i].x * 0.5f + 0.5f) * lightIntensity,
+                    (normalsListT1[i].y * 0.5f + 0.5f) * lightIntensity,
+                    (normalsListT1[i].z * 0.5f + 0.5f) * lightIntensity,
+                    1);
+
+                Gizmos.color = currentColor;
+                //Gizmos.color = new Color(1 * lightIntensity, 1 * lightIntensity, 1 * lightIntensity, 1);
+                Gizmos.DrawCube(hitPositionsListT1[i], Vector3.one * gizmoSize);
             }
         }
     }
