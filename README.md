@@ -7,6 +7,9 @@ When in the game view (IN PLAYMODE) of the project press space to view the hit p
 This was not made with a high focus on optimization but just optimized decently.<br>
 You can also click the raytracer object in playmode & view the script attached to it. You can change many things such as the radius of the sphere, show rays, show hit positions, change alpha of rays that hit nothing & etc.<br> 
 Project made in Unity > BIRP > Version 2021.3.16f1<br>
+Here are all the parameters you can control, they are all self explanitory.<br>
+![Screenshot_2](https://user-images.githubusercontent.com/52252068/235283477-2f3b19af-5c39-4f65-967e-b2cfebe8b478.png)<br>
+the last 4 lists all dont need to be tampered with & are there for debugging purposes.
 
 ## Pull requests!
 
