@@ -7,9 +7,25 @@ When in the game view (IN PLAYMODE) of the project press space to view the hit p
 This was not made with a high focus on optimization but just optimized decently.<br>
 You can also click the raytracer object in playmode & view the script attached to it. You can change many things such as the radius of the sphere, show rays, show hit positions, change alpha of rays that hit nothing & etc.<br> 
 Project made in Unity > BIRP > Version 2021.3.16f1<br>
-Here are all the parameters you can control, they are all self explanitory.<br>
+Here are all the parameters you can control, explanation is below the image.<br>
 ![Screenshot_2](https://user-images.githubusercontent.com/52252068/235283477-2f3b19af-5c39-4f65-967e-b2cfebe8b478.png)<br>
-the last 4 lists all dont need to be tampered with & are there for debugging purposes.
+- Width & Height resemble the density of rays & is essentially just resolution (Aspect ratio taken into account).<br>
+- Length is just simply the magnitude of the ray.<br>
+- Radius is the radius of the sphere to raytrace (the white gizmo sphere).<br>
+- Forward offset to move the ray origin on the Z axis. <br>
+- Main Light can be anything but just takes its direction its pointing @ to calculate shading.<br>
+- Root 0 Alpha is the color alpha of the rays not hitting the sphere 0 is nothing/transparent 1 is max/opaque. <br>
+- The next 3 bools are to show rays, show the hit positions as gizmos, & showing the position of the raytraced sphere as a gizmo. <br>
+- Reload Gizmos Key, Press the reload key to see gizmo hit positions, & always keep pressing it when changing values.<br>
+- Finally, just gizmo sphere size.
+
+
+
+
+
+The last 4 lists all dont need to be tampered with & are there for debugging purposes.
+
+
 
 ## Pull requests!
 
