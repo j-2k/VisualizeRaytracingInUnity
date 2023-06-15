@@ -32,7 +32,7 @@ The last 4 lists all dont need to be tampered with & are there for debugging pur
 I also don't know of a method to draw gizmos in the update method if you know a good method tell me about it.<br>
 I never found a "good way" of drawing gizmos dynamically (i did have a dynamic method but it was very laggy when increasing radius because of the # of gizmos that would need to be drawn on the screen.) so if you have a better method maybe do a pull req or tell me about it, thanks.<br>
 <br>
-
+## Project Images
 Here are some gif & images below to see the project without downloading.
 <p align="center">
   <img src="https://user-images.githubusercontent.com/52252068/233801093-89c26e6d-1ea6-4914-bac1-b0d917e13e3e.gif"/>
